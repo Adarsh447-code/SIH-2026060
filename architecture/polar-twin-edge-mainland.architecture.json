@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Polar Twin Edge-to-Mainland Architecture",
+    "output": "polar-twin-edge-mainland.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Adarsh447-code/SIH-2026060",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f4214c2b67b344f6eee674023526cd01381ef42b"
+    },
+    "views": [
+      {
+        "id": "offline-first",
+        "label": "Offline-first edge",
+        "focus": ["sensors", "edge-pipeline", "local-buffer", "local-dashboard"],
+        "note": "Show why local operations continue during satellite outages."
+      },
+      {
+        "id": "uplink-reconciliation",
+        "label": "Uplink and reconciliation",
+        "focus": ["local-buffer", "uplink", "satellite", "ingestion", "reconciliation", "timeseries"],
+        "note": "Follow priority transmission and safe backlog recovery after reconnect."
+      },
+      {
+        "id": "intelligence-and-control",
+        "label": "Intelligence and control",
+        "focus": ["timeseries", "analytics", "alerts", "mainland-dashboard"],
+        "note": "Trace prediction, alerting, dashboards, and the bidirectional command path."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "sensors",
+      "type": "external",
+      "label": "Station Sensors",
+      "pos": [30, 310],
+      "size": [140, 66],
+      "tag": "Maitri + Bharati"
+    },
+    {
+      "id": "edge-pipeline",
+      "type": "backend",
+      "label": "Edge Data Pipeline",
+      "pos": [210, 310],
+      "size": [150, 66],
+      "tag": "Antarctica side"
+    },
+    {
+      "id": "local-buffer",
+      "type": "database",
+      "label": "Local Buffer / TSDB",
+      "pos": [390, 310],
+      "size": [150, 66],
+      "tag": "On-site source of truth"
+    },
+    {
+      "id": "uplink",
+      "type": "backend",
+      "label": "Priority Uplink Manager",
+      "pos": [570, 310],
+      "size": [150, 66],
+      "tag": "TLS + device token"
+    },
+    {
+      "id": "local-dashboard",
+      "type": "frontend",
+      "label": "Local Dashboard",
+      "pos": [390, 150],
+      "size": [150, 66],
+      "tag": "Reads local buffer",
+      "sources": [{ "path": "src/App.tsx", "line": 214, "label": "Dashboard view" }]
+    },
+    {
+      "id": "satellite",
+      "type": "cloud",
+      "label": "Satellite Link",
+      "pos": [750, 310],
+      "size": [150, 66],
+      "tag": "Bidirectional"
+    },
+    {
+      "id": "ingestion",
+      "type": "backend",
+      "label": "Mainland Ingestion API",
+      "pos": [930, 310],
+      "size": [150, 66],
+      "tag": "NCAOR / MoES"
+    },
+    {
+      "id": "reconciliation",
+      "type": "backend",
+      "label": "Reconciliation Layer",
+      "pos": [930, 150],
+      "size": [150, 66]
+    },
+    {
+      "id": "timeseries",
+      "type": "database",
+      "label": "Time-Series Store",
+      "pos": [1110, 310],
+      "size": [150, 66],
+      "tag": "Durable mainland data"
+    },
+    {
+      "id": "analytics",
+      "type": "backend",
+      "label": "Twin Analytics",
+      "pos": [1110, 150],
+      "size": [150, 66]
+    },
+    {
+      "id": "alerts",
+      "type": "backend",
+      "label": "Alert Engine",
+      "pos": [1290, 150],
+      "size": [150, 66]
+    },
+    {
+      "id": "mainland-dashboard",
+      "type": "frontend",
+      "label": "Mainland Dashboard",
+      "pos": [1290, 310],
+      "size": [150, 66],
+      "tag": "RBAC protected"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "EDGE SERVER — ANTARCTICA",
+      "wraps": ["edge-pipeline", "local-buffer", "uplink", "local-dashboard"]
+    },
+    {
+      "kind": "region",
+      "label": "MAINLAND SERVER — INDIA",
+      "wraps": ["ingestion", "reconciliation", "timeseries", "analytics", "alerts"]
+    },
+    {
+      "kind": "security-group",
+      "label": "RBAC gate before mainland reads",
+      "wraps": ["mainland-dashboard", "alerts", "analytics"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "sensor-ingest",
+      "from": "sensors",
+      "to": "edge-pipeline",
+      "label": "raw readings",
+      "variant": "emphasis",
+      "labelDy": 57
+    },
+    {
+      "id": "pipeline-buffer",
+      "from": "edge-pipeline",
+      "to": "local-buffer",
+      "label": "clean batches",
+      "variant": "emphasis",
+      "labelDy": 57
+    },
+    {
+      "id": "buffer-dashboard",
+      "from": "local-buffer",
+      "to": "local-dashboard",
+      "label": "local reads",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "buffer-uplink",
+      "from": "local-buffer",
+      "to": "uplink",
+      "label": "priority queues",
+      "variant": "emphasis",
+      "labelDy": 57
+    },
+    {
+      "id": "uplink-satellite",
+      "from": "uplink",
+      "to": "satellite",
+      "variant": "security"
+    },
+    {
+      "id": "satellite-ingestion",
+      "from": "satellite",
+      "to": "ingestion",
+      "label": "REST / MQTT",
+      "variant": "emphasis",
+      "labelDy": 57
+    },
+    {
+      "id": "ingestion-reconciliation",
+      "from": "ingestion",
+      "to": "reconciliation",
+      "label": "dedupe backlog",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "reconciliation-store",
+      "from": "reconciliation",
+      "to": "timeseries",
+      "label": "ordered data",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "store-analytics",
+      "from": "timeseries",
+      "to": "analytics",
+      "label": "query",
+      "labelDx": 80,
+      "labelDy": -30,
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "analytics-alerts",
+      "from": "analytics",
+      "to": "alerts",
+      "label": "predictions",
+      "variant": "security",
+      "labelDy": 57
+    },
+    {
+      "id": "analytics-dashboard",
+      "from": "analytics",
+      "to": "mainland-dashboard",
+      "label": "KPIs + twin state",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "alerts-dashboard",
+      "from": "alerts",
+      "to": "mainland-dashboard",
+      "label": "severity + action",
+      "labelDx": 110,
+      "labelDy": 57,
+      "fromSide": "bottom",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Offline resilience",
+      "items": [
+        "Every batch is written locally before uplink",
+        "Local dashboard stays live during blackout",
+        "SQLite buffer retains days to weeks of readings"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Reliable uplink",
+      "items": [
+        "Critical alerts transmit before routine telemetry",
+        "Exponential backoff handles intermittent links",
+        "Reconciliation removes duplicates and repairs gaps"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Decision intelligence",
+      "items": [
+        "Analytics calculates trends and depletion forecasts",
+        "Alert engine adds severity and recommended actions",
+        "RBAC protects mainland reads and command feedback"
+      ]
+    }
+  ]
+}
