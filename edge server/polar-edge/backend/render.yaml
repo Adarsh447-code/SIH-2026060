@@ -13,6 +13,6 @@ services:
       - key: SATELLITE_DEFAULT_CONNECTED
         value: "true"
       - key: MAIN_SYNC_URL
-        sync: false
+        value: https://sih-2026060.onrender.com/internal/edge-sync
       - key: MAIN_SYNC_TOKEN
         value: polar-twin-sync-2026
