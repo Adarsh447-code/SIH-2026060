@@ -1,3 +1,4 @@
+## environment
 # 🧊 Polar Twin — SIH-2026060
 
 > Real-time digital twin platform for India's Antarctic research stations **Maitri** and **Bharati**
@@ -103,3 +104,8 @@ npm run dev
 ---
 
 *Smart India Hackathon 2026 | Problem #60 | Polar Infrastructure Monitoring*
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/c3ff501c-88ac-46e6-955c-0c66f280d079" />
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/c3904a45-97c5-43b1-973f-b59fb13b2104" />
+
