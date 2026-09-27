@@ -26,29 +26,40 @@ class ReconciliationService:
             finally:
                 db.close()
 
-    def reconcile(self):
+    def reconcile(self, station: str = None):
         with db_lock:
             db = SessionLocal()
             try:
-                readings = (
-                    db.query(SensorReading)
-                    .filter(SensorReading.sync_status != "SYNCED")
-                    .order_by(SensorReading.id)
-                    .limit(100)
-                    .all()
-                )
-                result = self.client.upload(readings, station="MAITRI")
-                if result["status"] != "uploaded":
-                    return result
+                query = db.query(SensorReading).filter(SensorReading.sync_status != "SYNCED")
+                if station:
+                    query = query.filter(SensorReading.station_id == station)
+                readings = query.order_by(SensorReading.id).limit(200).all()
+                if not readings:
+                    return {"status": "nothing_to_sync", "reconciled": 0}
 
-                for reading in readings:
-                    reading.sync_status = "SYNCED"
+                # Group by station
+                stations_present = {r.station_id or "MAITRI" for r in readings}
+                total_reconciled = 0
+                last_batch_id = None
+
+                for st in stations_present:
+                    st_readings = [r for r in readings if (r.station_id or "MAITRI") == st]
+                    result = self.client.upload(st_readings, station=st)
+                    if result.get("status") == "uploaded":
+                        for reading in st_readings:
+                            reading.sync_status = "SYNCED"
+                        total_reconciled += len(st_readings)
+                        last_batch_id = result.get("batch_id")
+                    else:
+                        return result
+
                 db.commit()
-                self.last_successful_sync = datetime.utcnow().isoformat() + "Z"
+                if total_reconciled > 0:
+                    self.last_successful_sync = datetime.utcnow().isoformat() + "Z"
                 return {
                     "status": "synchronization_complete",
-                    "reconciled": len(readings),
-                    "batch_id": result["batch_id"],
+                    "reconciled": total_reconciled,
+                    "batch_id": last_batch_id,
                 }
             finally:
                 db.close()

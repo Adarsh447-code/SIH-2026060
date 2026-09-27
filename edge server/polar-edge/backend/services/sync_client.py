@@ -9,12 +9,14 @@ from models import SensorReading
 
 class SyncClient:
     def __init__(self):
-        self.url = os.getenv("MAIN_SYNC_URL", "").strip()
-        self.token = os.getenv("MAIN_SYNC_TOKEN", "").strip()
+        self.url = os.getenv("MAIN_SYNC_URL", "http://127.0.0.1:8001/internal/edge-sync").strip()
+        self.token = os.getenv("MAIN_SYNC_TOKEN", "polar-twin-sync-2026").strip()
 
     def upload(self, readings: Iterable[SensorReading], station: str) -> Dict[str, Any]:
         readings = list(readings)
-        if not self.url:
+        url = (os.getenv("MAIN_SYNC_URL") or self.url or "http://127.0.0.1:8001/internal/edge-sync").strip()
+        token = (os.getenv("MAIN_SYNC_TOKEN") or self.token or "polar-twin-sync-2026").strip()
+        if not url:
             return {"status": "not_configured", "uploaded": 0}
         if not readings:
             return {"status": "nothing_to_sync", "uploaded": 0}
@@ -26,11 +28,11 @@ class SyncClient:
             "readings": [self.serialize(reading) for reading in readings],
         }
         headers = {"Content-Type": "application/json"}
-        if self.token:
-            headers["Authorization"] = f"Bearer {self.token}"
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
 
         try:
-            response = requests.post(self.url, json=payload, headers=headers, timeout=30)
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
             response.raise_for_status()
         except requests.RequestException as exc:
             return {"status": "failed", "uploaded": 0, "error": str(exc)}

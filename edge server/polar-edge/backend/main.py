@@ -220,12 +220,25 @@ def stream_sensor():
 def run_streamer():
     while True:
         try:
-            for sensor_type in ["generator", "battery", "hvac", "pump", "environmental"]:
-                processor.ingest_reading(simulator.generate_reading(sensor_type))
-                time.sleep(0.05)
+            for st in ["MAITRI", "BHARATI"]:
+                simulator.station_id = st
+                for sensor_type in ["generator", "battery", "hvac", "pump", "environmental"]:
+                    processor.ingest_reading(simulator.generate_reading(sensor_type))
+                    time.sleep(0.02)
         except Exception as exc:
             processor.log("ERROR", "sensor_stream_error", str(exc))
-        time.sleep(1)
+        time.sleep(2)
+
+
+def run_auto_sync():
+    while True:
+        try:
+            if satellite.connected:
+                reconciliation.reconcile()
+        except Exception:
+            pass
+        time.sleep(3)
 
 
 threading.Thread(target=run_streamer, daemon=True).start()
+threading.Thread(target=run_auto_sync, daemon=True).start()

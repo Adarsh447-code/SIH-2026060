@@ -1,6 +1,6 @@
 import type { Severity, Station } from "./types";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:8001";
 
 export type SensorReading = {
   id: number;
@@ -197,405 +197,44 @@ function latestByType(readings: SensorReading[], sensorType: string): SensorRead
   return readings.find((reading) => reading.sensor_type === sensorType);
 }
 
-function getMaitriFallback(): DashboardSnapshot {
-  const assets: DashboardAsset[] = [
-    {
-      name: "Generator DG-01 (Cummins 125 kVA)",
-      location: "Main Utility Block / Bay A",
-      subsystem: "Electrical Generation",
-      status: "normal",
-      health: 96,
-      value: "74.2 kW · 1500 RPM",
-      runtime: "14,820 hrs",
-      risk: 4,
-      lastService: "12 Aug 2026",
-      vibration: "1.4 mm/s",
-      operatingTemp: "82.5°C",
-    },
-    {
-      name: "Generator DG-02 (Cummins 125 kVA)",
-      location: "Main Utility Block / Bay B",
-      subsystem: "Electrical Generation",
-      status: "warning",
-      health: 68,
-      value: "68.3 kW · 1502 RPM",
-      runtime: "16,410 hrs",
-      risk: 74,
-      lastService: "28 Jul 2026",
-      vibration: "3.8 mm/s",
-      operatingTemp: "98.4°C",
-    },
-    {
-      name: "Generator DG-03 (Emergency Standby)",
-      location: "Main Utility Block / Bay C",
-      subsystem: "Electrical Generation",
-      status: "normal",
-      health: 98,
-      value: "0.0 kW (Cold Standby)",
-      runtime: "4,120 hrs",
-      risk: 2,
-      lastService: "02 Sep 2026",
-      vibration: "0.0 mm/s",
-      operatingTemp: "21.0°C",
-    },
-    {
-      name: "Priyadarshini Lake Pump P-01",
-      location: "Lake Intake Jetty House",
-      subsystem: "Freshwater Supply",
-      status: "normal",
-      health: 91,
-      value: "184.0 L/min · 4.8 bar",
-      runtime: "8,940 hrs",
-      risk: 9,
-      lastService: "15 Aug 2026",
-      vibration: "1.8 mm/s",
-      operatingTemp: "3.2°C",
-    },
-    {
-      name: "Water Pipeline Heated Trace Cable",
-      location: "1.2 km Intake-to-Station Trace",
-      subsystem: "Thermal Freeze Protection",
-      status: "normal",
-      health: 94,
-      value: "+4.8°C core · 3.4 kW",
-      runtime: "Continuous",
-      risk: 6,
-      lastService: "01 Sep 2026",
-      vibration: "N/A",
-      operatingTemp: "4.8°C",
-    },
-    {
-      name: "HVAC Habitation Loop AHU-01",
-      location: "Central Habitation Module",
-      subsystem: "Environmental Control",
-      status: "normal",
-      health: 89,
-      value: "+21.4°C inside · 28.5 kW",
-      runtime: "24,100 hrs",
-      risk: 11,
-      lastService: "10 Aug 2026",
-      vibration: "1.2 mm/s",
-      operatingTemp: "21.4°C",
-    },
-    {
-      name: "MARA Atmospheric Radar System",
-      location: "MARA Science Complex",
-      subsystem: "Upper Atmosphere Research",
-      status: "normal",
-      health: 94,
-      value: "53.5 MHz · 7.4 kW RF",
-      runtime: "12,300 hrs",
-      risk: 5,
-      lastService: "25 Aug 2026",
-      vibration: "N/A",
-      operatingTemp: "18.5°C",
-    },
-    {
-      name: "Campbell Scientific AWS Station",
-      location: "Gargi Meteorological Mast",
-      subsystem: "Meteorological Sensors",
-      status: "normal",
-      health: 97,
-      value: "-28.4°C · 42.5 km/h",
-      runtime: "Continuous",
-      risk: 3,
-      lastService: "18 Aug 2026",
-      vibration: "N/A",
-      operatingTemp: "-28.4°C",
-    },
-    {
-      name: "Broadband Seismometer & GNSS",
-      location: "Priya Solid Bedrock Hut",
-      subsystem: "Geophysical Observatory",
-      status: "normal",
-      health: 86,
-      value: "Triaxial 24-bit · 0.8 kW",
-      runtime: "Continuous",
-      risk: 14,
-      lastService: "05 Jul 2026",
-      vibration: "Ambient seismic",
-      operatingTemp: "-4.2°C",
-    },
-    {
-      name: "Fluxgate Magnetometer Array",
-      location: "Nandi Geomagnetic Hut",
-      subsystem: "Space Weather Monitoring",
-      status: "normal",
-      health: 93,
-      value: "42,185 nT field vector",
-      runtime: "Continuous",
-      risk: 7,
-      lastService: "22 Aug 2026",
-      vibration: "N/A",
-      operatingTemp: "-6.1°C",
-    },
-    {
-      name: "Kuber Fuel Depot Storage Farm",
-      location: "Kuber Container Staging",
-      subsystem: "Fuel Reserves",
-      status: "normal",
-      health: 92,
-      value: "128,400 L · 68% cap",
-      runtime: "Static Storage",
-      risk: 8,
-      lastService: "14 Jul 2026",
-      vibration: "N/A",
-      operatingTemp: "-18.0°C",
-    },
-    {
-      name: "LiFePO4 Station Battery Bank",
-      location: "Power Distribution Substation",
-      subsystem: "Grid Buffer Storage",
-      status: "normal",
-      health: 94,
-      value: "78% SoC · 312 kWh",
-      runtime: "3,200 cycles",
-      risk: 6,
-      lastService: "20 Aug 2026",
-      vibration: "N/A",
-      operatingTemp: "19.5°C",
-    },
-  ];
-
-  const alerts: DashboardAlert[] = [
-    {
-      id: "ALT-GEN-02",
-      level: "warning",
-      title: "DG-02 Coolant Heat Exchanger Delta High",
-      detail: "Secondary heat loop thermal delta at 16.4°C (threshold 14.0°C). Increased fan duty cycle detected.",
-      time: "14m ago",
-      asset: "Generator DG-02 (Cummins 125 kVA)",
-      source: "SCADA / Telemetry Loop",
-    },
-    {
-      id: "ALT-MET-WIND",
-      level: "warning",
-      title: "Katabatic Wind Warning: Gusts > 75 km/h Expected",
-      detail: "Barometric drop of 4.2 hPa / 3h observed at Gargi AWS. Securing external cargo bladders recommended.",
-      time: "48m ago",
-      asset: "Campbell Scientific AWS Station",
-      source: "Weather Radar & Synoptic Model",
-    },
-    {
-      id: "ALT-PUMP-01",
-      level: "normal",
-      title: "Priyadarshini Lake Intake Flow Rate Nominal",
-      detail: "Water pump P-01 running at 184 L/min with trace heating active at 4.8°C.",
-      time: "2h ago",
-      asset: "Priyadarshini Lake Pump P-01",
-      source: "Hydraulics SCADA",
-    },
-  ];
-
-  return {
-    station: "MAITRI",
-    status: {
-      station: "MAITRI",
-      edge_server: "ONLINE",
-      satellite: "CONNECTED",
-      local_operation: "ACTIVE",
-      last_mainland_sync: "14:32:18 UTC",
-      pending_uploads: 0,
-      critical_events: 0,
-      local_buffer: 84210,
-      data_freshness: "LIVE",
-      uplink_quality: 98.8,
-      latency_ms: 112,
-    },
-    metrics: {
-      health: 89,
-      fuel: 68,
-      battery: 78,
-      temp: -28.4,
-      wind: 42.5,
-      windDirection: 68,
-      humidity: 52,
-      pressure: 984.2,
-      environmentAvailable: true,
-      power: 142.5,
-      demand: 118.2,
-      water: 184.0,
-      windChill: -44.1,
-      fuelDaysAutonomy: 23.4,
-      batteryHours: 19.2,
-      internalTemp: 21.4,
-    },
-    assets,
-    alerts,
-    isLiveServer: false,
-  };
-}
-
-function getBharatiFallback(): DashboardSnapshot {
-  const assets: DashboardAsset[] = [
-    {
-      name: "MAN Diesel Generator CHP-01",
-      location: "Central Energy Centre / Bay 1",
-      subsystem: "Combined Heat & Power",
-      status: "normal",
-      health: 95,
-      value: "82.0 kW · 42 kWth",
-      runtime: "9,200 hrs",
-      risk: 5,
-      lastService: "10 Aug 2026",
-      vibration: "1.1 mm/s",
-      operatingTemp: "84.0°C",
-    },
-    {
-      name: "MAN Diesel Generator CHP-02",
-      location: "Central Energy Centre / Bay 2",
-      subsystem: "Combined Heat & Power",
-      status: "normal",
-      health: 94,
-      value: "79.5 kW · 40 kWth",
-      runtime: "8,850 hrs",
-      risk: 6,
-      lastService: "04 Aug 2026",
-      vibration: "1.3 mm/s",
-      operatingTemp: "83.5°C",
-    },
-    {
-      name: "Seawater Reverse Osmosis RO-01",
-      location: "Desalination & Water Annex",
-      subsystem: "Potable Water Production",
-      status: "normal",
-      health: 91,
-      value: "4,800 L/day · 180 µS/cm",
-      runtime: "6,400 hrs",
-      risk: 9,
-      lastService: "16 Aug 2026",
-      vibration: "1.6 mm/s",
-      operatingTemp: "14.2°C",
-    },
-    {
-      name: "ISRO Ground Station Radome 1",
-      location: "High Point Radome Hill",
-      subsystem: "Earth Observation Downlink",
-      status: "normal",
-      health: 98,
-      value: "7.5m S/X Band · SNR 19.4 dB",
-      runtime: "Continuous",
-      risk: 2,
-      lastService: "21 Aug 2026",
-      vibration: "0.2 mm/s",
-      operatingTemp: "16.0°C",
-    },
-    {
-      name: "ISRO Ground Station Radome 2",
-      location: "High Point Radome Hill",
-      subsystem: "Earth Observation Downlink",
-      status: "normal",
-      health: 97,
-      value: "7.5m X/Ka Band · Cartosat Track",
-      runtime: "Continuous",
-      risk: 3,
-      lastService: "22 Aug 2026",
-      vibration: "0.2 mm/s",
-      operatingTemp: "16.5°C",
-    },
-    {
-      name: "Aerofoil Modular Habitation HVAC",
-      location: "Main 3-Tier Elevated Structure",
-      subsystem: "Life Support & Pressurization",
-      status: "normal",
-      health: 96,
-      value: "+22.0°C inside · +15 Pa",
-      runtime: "Continuous",
-      risk: 4,
-      lastService: "12 Aug 2026",
-      vibration: "0.8 mm/s",
-      operatingTemp: "22.0°C",
-    },
-    {
-      name: "Marine Coastal AWS Weather Mast",
-      location: "Prydz Bay Coastal Headland",
-      subsystem: "Coastal Synoptic Meteorology",
-      status: "normal",
-      health: 96,
-      value: "-19.2°C · 31.0 km/h SSE",
-      runtime: "Continuous",
-      risk: 4,
-      lastService: "15 Aug 2026",
-      vibration: "N/A",
-      operatingTemp: "-19.2°C",
-    },
-    {
-      name: "Polar Bunded Fuel Farm",
-      location: "Fuel Storage Yard / Tank F-01..04",
-      subsystem: "Aviation Turbine Fuel & Diesel",
-      status: "normal",
-      health: 92,
-      value: "185,000 L · 74% cap",
-      runtime: "Static Storage",
-      risk: 8,
-      lastService: "02 Jul 2026",
-      vibration: "N/A",
-      operatingTemp: "-12.0°C",
-    },
-  ];
-
-  const alerts: DashboardAlert[] = [
-    {
-      id: "ALT-BHA-SAT",
-      level: "normal",
-      title: "ISRO Ground Station Telemetry Pass Acquired",
-      detail: "Cartosat-3 downlink completed over Prydz Bay. 42.8 GB science payload transferred without packet drops.",
-      time: "22m ago",
-      asset: "ISRO Ground Station Radome 2",
-      source: "ISRO NRSC Telemetry Downlink",
-    },
-    {
-      id: "ALT-BHA-RO",
-      level: "normal",
-      title: "RO Desalination Daily Fresh Water Quota Met",
-      detail: "Storage reservoir reached 94% capacity. High-pressure pump cycling to standby.",
-      time: "1h ago",
-      asset: "Seawater Reverse Osmosis RO-01",
-      source: "Water SCADA",
-    },
-  ];
-
-  return {
-    station: "BHARATI",
-    status: {
-      station: "BHARATI",
-      edge_server: "ONLINE",
-      satellite: "CONNECTED",
-      local_operation: "ACTIVE",
-      last_mainland_sync: "14:32:18 UTC",
-      pending_uploads: 0,
-      critical_events: 0,
-      local_buffer: 104200,
-      data_freshness: "LIVE",
-      uplink_quality: 99.4,
-      latency_ms: 94,
-    },
-    metrics: {
-      health: 95,
-      fuel: 74,
-      battery: 86,
-      temp: -19.2,
-      wind: 31.0,
-      windDirection: 155,
-      humidity: 64,
-      pressure: 992.4,
-      environmentAvailable: true,
-      power: 161.5,
-      demand: 134.8,
-      water: 210.0,
-      windChill: -30.5,
-      fuelDaysAutonomy: 34.2,
-      batteryHours: 24.0,
-      internalTemp: 22.0,
-    },
-    assets,
-    alerts,
-    isLiveServer: false,
-  };
-}
-
 function getFallbackSnapshot(station: Station): DashboardSnapshot {
-  return station === "BHARATI" ? getBharatiFallback() : getMaitriFallback();
+  return {
+    station,
+    status: {
+      station,
+      edge_server: "STANDBY",
+      satellite: "STANDBY",
+      local_operation: "ACTIVE",
+      last_mainland_sync: "---",
+      pending_uploads: 0,
+      critical_events: 0,
+      local_buffer: 0,
+      data_freshness: "STANDBY",
+      uplink_quality: 0,
+      latency_ms: 0,
+    },
+    metrics: {
+      health: 100,
+      fuel: 0,
+      battery: 0,
+      temp: 0,
+      wind: 0,
+      windDirection: null,
+      humidity: null,
+      pressure: null,
+      environmentAvailable: false,
+      power: 0,
+      demand: 0,
+      water: 0,
+      windChill: undefined,
+      fuelDaysAutonomy: undefined,
+      batteryHours: undefined,
+      internalTemp: undefined,
+    },
+    assets: [],
+    alerts: [],
+    isLiveServer: false,
+  };
 }
 
 function toSnapshot(
@@ -610,19 +249,19 @@ function toSnapshot(
     return { ...fallback, status: { ...fallback.status, ...status }, isLiveServer: true };
   }
 
-  const stationAnomalies = anomalies.filter((item) => item.station.toUpperCase() === station);
-  const stationEvents = events.filter((item) => item.station.toUpperCase() === station);
+  const stationAnomalies = anomalies.filter((item) => (item.station || "").toUpperCase() === station);
+  const stationEvents = events.filter((item) => (item.station || "").toUpperCase() === station);
   const generator = latestByType(readings, "generator");
   const environment = latestByType(readings, "environmental");
   const battery = latestByType(readings, "battery");
   const pump = latestByType(readings, "pump");
+  const hvac = latestByType(readings, "hvac");
 
-  const health = Math.round(
-    Math.max(
-      0,
-      100 - (stationAnomalies.reduce((total, item) => total + item.anomaly_score, 0) * 100) / Math.max(1, stationAnomalies.length)
-    )
-  );
+  const avgAnomaly =
+    stationAnomalies.length > 0
+      ? stationAnomalies.reduce((total, item) => total + (item.anomaly_score || 0), 0) / stationAnomalies.length
+      : 0;
+  const health = Math.round(Math.max(0, 100 - avgAnomaly * 100));
 
   const assets: DashboardAsset[] = Array.from(new Map(readings.map((reading) => [reading.asset_id, reading])).values()).map(
     (reading) => ({
@@ -637,10 +276,15 @@ function toSnapshot(
           ? `${reading.temperature.toFixed(1)}°C`
           : reading.pressure != null
           ? `${reading.pressure.toFixed(1)} bar`
+          : reading.charge_percentage != null
+          ? `${reading.charge_percentage.toFixed(0)}%`
+          : reading.flow_rate != null
+          ? `${reading.flow_rate.toFixed(1)} L/min`
           : "Operational",
-      runtime: reading.rpm ? `${reading.rpm} RPM` : "Continuous",
+      runtime: reading.rpm ? `${Math.round(reading.rpm)} RPM` : "Continuous",
       risk: Math.round((reading.anomaly_score ?? 0) * 100),
       operatingTemp: reading.temperature != null ? `${reading.temperature.toFixed(1)}°C` : undefined,
+      vibration: reading.vibration != null ? `${reading.vibration.toFixed(1)} mm/s` : undefined,
     })
   );
 
@@ -648,49 +292,64 @@ function toSnapshot(
     id: `ANOM-${item.id ?? idx}`,
     level: severity(item.severity),
     title: `${item.asset}: ${item.sensor_type} anomaly detected`,
-    detail: `${item.severity.toUpperCase()} anomaly score ${(item.anomaly_score * 100).toFixed(0)}% recorded in live telemetry.`,
+    detail: `${(item.severity || "ANOMALY").toUpperCase()} anomaly score ${Math.round((item.anomaly_score || 0) * 100)}% recorded in live database telemetry.`,
     time: age(item.timestamp),
     asset: item.asset,
-    source: "Edge Anomaly Detector",
+    source: "PostgreSQL Anomaly Register",
   }));
 
-  const fallback = getFallbackSnapshot(station);
+  const power = generator?.power_output != null ? Number(generator.power_output) : 0;
+  const loadPct = generator?.load != null ? Number(generator.load) : 80;
+  const demand = generator?.power_consumption != null ? Number(generator.power_consumption) : Math.round(power * (loadPct / 100) * 10) / 10;
+  const fuel = generator?.fuel_level != null ? Math.round(Number(generator.fuel_level)) : 0;
+  const fuelDays = fuel > 0 ? Math.round((fuel / 100) * 30 * 10) / 10 : undefined;
+  const batt = battery?.charge_percentage != null ? Math.round(Number(battery.charge_percentage)) : 0;
+  const battHrs = batt > 0 ? Math.round((batt / 100) * 24 * 10) / 10 : undefined;
+  const temp = environment?.outside_temperature != null ? Number(environment.outside_temperature) : 0;
+  const wind = environment?.wind_speed != null ? Number(environment.wind_speed) : 0;
+  const windChill =
+    wind > 4.8 && temp < 10
+      ? Math.round((13.12 + 0.6215 * temp - 11.37 * Math.pow(wind, 0.16) + 0.3965 * temp * Math.pow(wind, 0.16)) * 10) / 10
+      : undefined;
 
   return {
     station,
     status: {
       ...status,
-      uplink_quality: 98.8,
-      latency_ms: 112,
+      uplink_quality: status.data_freshness === "LIVE" ? 99.2 : 0,
+      latency_ms: status.data_freshness === "LIVE" ? 112 : 0,
     },
     metrics: {
-      health: health > 0 ? health : fallback.metrics.health,
-      fuel: generator?.fuel_level ?? fallback.metrics.fuel,
-      battery: battery?.charge_percentage ?? fallback.metrics.battery,
-      temp: environment?.outside_temperature ?? generator?.temperature ?? fallback.metrics.temp,
-      wind: environment?.wind_speed ?? fallback.metrics.wind,
-      windDirection: environment?.wind_direction ?? fallback.metrics.windDirection,
-      humidity: environment?.humidity ?? fallback.metrics.humidity,
-      pressure: environment?.atmospheric_pressure ?? fallback.metrics.pressure,
-      environmentAvailable: environment !== undefined || fallback.metrics.environmentAvailable,
-      power: generator?.power_output ?? fallback.metrics.power,
-      demand: generator?.power_consumption ?? fallback.metrics.demand,
-      water: pump?.flow_rate ?? fallback.metrics.water,
-      windChill: -42.8,
-      fuelDaysAutonomy: Math.round(((generator?.fuel_level ?? fallback.metrics.fuel) / 100) * 34.5 * 10) / 10,
-      batteryHours: 19.5,
-      internalTemp: 21.4,
+      health,
+      fuel,
+      battery: batt,
+      temp,
+      wind,
+      windDirection: environment?.wind_direction != null ? Math.round(Number(environment.wind_direction)) : null,
+      humidity: environment?.humidity != null ? Math.round(Number(environment.humidity)) : null,
+      pressure: environment?.atmospheric_pressure != null ? Math.round(Number(environment.atmospheric_pressure)) : null,
+      environmentAvailable: environment !== undefined,
+      power,
+      demand,
+      water: pump?.flow_rate != null ? Number(pump.flow_rate) : 0,
+      windChill,
+      fuelDaysAutonomy: fuelDays,
+      batteryHours: battHrs,
+      internalTemp: hvac?.temperature != null ? Number(hvac.temperature.toFixed(1)) : undefined,
     },
-    assets: assets.length > 0 ? assets : fallback.assets,
-    alerts: alerts.length > 0 ? alerts : stationEvents.length > 0 ? stationEvents.map((item, idx) => ({
-      id: `EVT-${item.id ?? idx}`,
-      level: severity(item.priority),
-      title: `${item.asset}: ${item.anomaly}`,
-      detail: `Priority event flagged by edge inference layer. Score: ${(item.score * 100).toFixed(0)}%.`,
-      time: age(item.timestamp),
-      asset: item.asset,
-      source: "Priority Rule Engine",
-    })) : fallback.alerts,
+    assets,
+    alerts:
+      alerts.length > 0
+        ? alerts
+        : stationEvents.map((item, idx) => ({
+            id: `EVT-${item.id ?? idx}`,
+            level: severity(item.priority),
+            title: `${item.asset}: ${item.anomaly}`,
+            detail: `Priority event flagged by edge inference layer. Score: ${Math.round((item.score || 0) * 100)}%.`,
+            time: age(item.timestamp),
+            asset: item.asset,
+            source: "Priority Rule Engine",
+          })),
     isLiveServer: true,
   };
 }

@@ -16,6 +16,7 @@ class MainlandReading(Base):
     asset_id = Column(String(128), nullable=False)
     sensor_type = Column(String(64), nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
+    received_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     payload = Column(Text, nullable=False)
 
     @classmethod
