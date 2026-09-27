@@ -14,7 +14,7 @@ import { SatelliteView } from './views/SatelliteView';
 import { WeatherView } from './views/WeatherView';
 import { LogsView } from './views/LogsView';
 
-const API = 'http://127.0.0.1:8000';
+const API = import.meta.env?.VITE_API_URL || 'http://127.0.0.1:8000';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('cockpit');

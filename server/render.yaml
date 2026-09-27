@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: polar-mainland
+    runtime: python
+    rootDir: server
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MAIN_DATABASE_URL
+        sync: false
+      - key: MAIN_SYNC_TOKEN
+        value: polar-twin-sync-2026

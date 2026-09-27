@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: polar-edge
+    runtime: python
+    rootDir: edge server/polar-edge/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./polar_edge.db
+      - key: EDGE_STATION
+        value: MAITRI
+      - key: SATELLITE_DEFAULT_CONNECTED
+        value: "true"
+      - key: MAIN_SYNC_URL
+        sync: false
+      - key: MAIN_SYNC_TOKEN
+        value: polar-twin-sync-2026
