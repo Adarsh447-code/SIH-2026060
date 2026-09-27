@@ -1,7 +1,33 @@
 ## environment
-# 🧊 Polar Twin — SIH-2026060
+# 🧊 DRISHTI — SIH-2026060
 
 > Real-time digital twin platform for India's Antarctic research stations **Maitri** and **Bharati**
+
+## 1 DRISHTI
+We are praposing DRISHTI, a Digital Twin based platform for the remote management of India’s Maitri and Bharati Antarctic research stations.
+## 2 Praposed Solution
+It Provides Unified Monitoring: Integrates infrastructure, energy, logistics, and environmental data into a single platform.
+
+It is based on Edge–Mainland Architecture: Collects, validates, aggregates, compresses, and securely transmits station data.
+
+It has AI-Powered Intelligence: Provides dashboards, anomaly detection, risk assessment, forecasting, and what-if scenario simulation.
+
+Follows Data-Driven Management: Enables remote monitoring and informed decision-making using real and simulated data during the prototype phase.
+
+## 3 How it address the Problem:
+Unified Operations: Combines fragmented station data into a single operational view.
+
+Connectivity Resilience: Reduces dependence on continuous satellite connectivity through local buffering and store-and-forward synchronization.
+
+Early Risk Detection: Identifies equipment faults, energy shortages, environmental hazards, and inventory risks before they become critical.
+
+## 4 Inovation & Uniqueness:
+Unified Station Digital Twin: Integrates infrastructure, energy, logistics & environmental data into one station-specific digital twin.
+
+Antarctic-Ready Architecture: Uses an edge-first approach for limited bandwidth and intermittent connectivity.
+
+Scenario-Based Decision Support: Evaluates storms, generator failures, energy shortages, and shipment delays to compare risks and mitigation options.
+
 
 ---
 
@@ -108,4 +134,6 @@ npm run dev
 <img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/c3ff501c-88ac-46e6-955c-0c66f280d079" />
 
 <img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/c3904a45-97c5-43b1-973f-b59fb13b2104" />
+
+
 
