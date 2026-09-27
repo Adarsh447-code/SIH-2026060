@@ -1,0 +1,104 @@
+{
+  "polar-edge/backend/ai/anomaly_detector.py": {
+    "mtime": 1789367296.6501193,
+    "seen": 1789640983.6333294,
+    "ast_hash": "fcd621491369e2a51dc8ff92afb6f4dc",
+    "semantic_hash": "fcd621491369e2a51dc8ff92afb6f4dc"
+  },
+  "polar-edge/backend/database.py": {
+    "mtime": 1789307677.6152306,
+    "seen": 1789640983.6333349,
+    "ast_hash": "afed32e26c8f9fb0e46299e63d2e2b16",
+    "semantic_hash": "afed32e26c8f9fb0e46299e63d2e2b16"
+  },
+  "polar-edge/backend/main.py": {
+    "mtime": 1789307207.1721773,
+    "seen": 1789640983.633337,
+    "ast_hash": "67cf458f979f4afbba07769b515d95f0",
+    "semantic_hash": "67cf458f979f4afbba07769b515d95f0"
+  },
+  "polar-edge/backend/models.py": {
+    "mtime": 1789306812.9984627,
+    "seen": 1789640983.6333385,
+    "ast_hash": "cc6106659031d914b9b7b4759f62ead6",
+    "semantic_hash": "cc6106659031d914b9b7b4759f62ead6"
+  },
+  "polar-edge/backend/network/satellite.py": {
+    "mtime": 1789307147.7299187,
+    "seen": 1789640983.6333394,
+    "ast_hash": "23c85a05e29dac63eac523a9d60e195c",
+    "semantic_hash": "23c85a05e29dac63eac523a9d60e195c"
+  },
+  "polar-edge/backend/priority/priority_manager.py": {
+    "mtime": 1789306812.9994626,
+    "seen": 1789640983.6333406,
+    "ast_hash": "998112fa7e651c0a824bd73313260300",
+    "semantic_hash": "998112fa7e651c0a824bd73313260300"
+  },
+  "polar-edge/backend/schemas.py": {
+    "mtime": 1789306812.9984627,
+    "seen": 1789640983.6333418,
+    "ast_hash": "2242b706c2f39ae443fa3f0f9f841aac",
+    "semantic_hash": "2242b706c2f39ae443fa3f0f9f841aac"
+  },
+  "polar-edge/backend/sensors/simulator.py": {
+    "mtime": 1789306812.9984627,
+    "seen": 1789640983.6333427,
+    "ast_hash": "fb08c284c8ae0046db643aeadb6361f6",
+    "semantic_hash": "fb08c284c8ae0046db643aeadb6361f6"
+  },
+  "polar-edge/backend/services/data_processor.py": {
+    "mtime": 1789307686.714271,
+    "seen": 1789640983.6333437,
+    "ast_hash": "5733783ed473c14f8676242c509867c4",
+    "semantic_hash": "5733783ed473c14f8676242c509867c4"
+  },
+  "polar-edge/backend/services/queue_manager.py": {
+    "mtime": 1789307461.560284,
+    "seen": 1789640983.6333444,
+    "ast_hash": "64750cfab2ac551393388fe879ed67e0",
+    "semantic_hash": "64750cfab2ac551393388fe879ed67e0"
+  },
+  "polar-edge/backend/services/reconciliation.py": {
+    "mtime": 1789307470.1803215,
+    "seen": 1789640983.6333456,
+    "ast_hash": "c431ccc483160387a16a7114830df7ab",
+    "semantic_hash": "c431ccc483160387a16a7114830df7ab"
+  },
+  "polar-edge/frontend/package.json": {
+    "mtime": 1789306813.031463,
+    "seen": 1789640983.6333468,
+    "ast_hash": "4be6d5f4d6036b354c2fa8442d3d24f9",
+    "semantic_hash": "4be6d5f4d6036b354c2fa8442d3d24f9"
+  },
+  "polar-edge/frontend/src/App.jsx": {
+    "mtime": 1789307268.246443,
+    "seen": 1789640983.6333475,
+    "ast_hash": "d69f9c7cc836ebc14fcf4dfa164adb96",
+    "semantic_hash": "d69f9c7cc836ebc14fcf4dfa164adb96"
+  },
+  "polar-edge/frontend/src/main.jsx": {
+    "mtime": 1789306813.044463,
+    "seen": 1789640983.6333487,
+    "ast_hash": "906c810c9d7f7a86cfcb4b0e236b68c9",
+    "semantic_hash": "906c810c9d7f7a86cfcb4b0e236b68c9"
+  },
+  "polar-edge/README.md": {
+    "mtime": 1789307394.1269906,
+    "seen": 1789640983.6333497,
+    "ast_hash": "86bcd0961d27762034845cc09400a028",
+    "semantic_hash": "86bcd0961d27762034845cc09400a028"
+  },
+  "polar-edge/backend/requirements.txt": {
+    "mtime": 1789307297.3225696,
+    "seen": 1789640983.6333506,
+    "ast_hash": "7e51f37a065deae688bf15962d50b426",
+    "semantic_hash": "7e51f37a065deae688bf15962d50b426"
+  },
+  "polar-edge/frontend/index.html": {
+    "mtime": 1789306813.0353794,
+    "seen": 1789640983.6333513,
+    "ast_hash": "8ddae63f1f64eb3bba98025b36b6f402",
+    "semantic_hash": "8ddae63f1f64eb3bba98025b36b6f402"
+  }
+}

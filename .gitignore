@@ -4,3 +4,10 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.db
+*.sqlite3

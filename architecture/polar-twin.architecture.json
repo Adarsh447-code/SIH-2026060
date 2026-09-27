@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Polar Twin Mission Control Architecture",
+    "output": "polar-twin-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Adarsh447-code/SIH-2026060",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f4214c2b67b344f6eee674023526cd01381ef42b"
+    },
+    "views": [
+      {
+        "id": "frontend-experience",
+        "label": "Frontend experience",
+        "focus": ["operator", "dashboard", "client-state", "view-model"],
+        "note": "Trace how Mission Control turns live station data into operator actions."
+      },
+      {
+        "id": "backend-platform",
+        "label": "Backend platform",
+        "focus": ["telemetry-api", "stream", "alert-engine", "station-db"],
+        "note": "Follow telemetry ingestion, alert evaluation, persistence, and dashboard delivery."
+      },
+      {
+        "id": "operator-loop",
+        "label": "Operator control loop",
+        "focus": ["operator", "dashboard", "telemetry-api", "alert-engine", "simulation"],
+        "note": "Connect navigation, inspection, alert response, and what-if simulation."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Mission Control Operator",
+      "sublabel": "Browser user",
+      "pos": [40, 310],
+      "size": [170, 66],
+      "sources": [{ "path": "src/App.tsx", "line": 120, "label": "App state" }]
+    },
+    {
+      "id": "dashboard",
+      "type": "frontend",
+      "label": "React Mission Control",
+      "sublabel": "Vite + TypeScript",
+      "pos": [250, 310],
+      "size": [170, 66],
+      "tag": "Current frontend",
+      "sources": [
+        { "path": "src/App.tsx", "line": 136, "label": "Dashboard shell" },
+        { "path": "src/main.tsx", "line": 6, "label": "React entry" }
+      ]
+    },
+    {
+      "id": "client-state",
+      "type": "frontend",
+      "label": "Navigation & UI State",
+      "sublabel": "Page + drawer state",
+      "pos": [250, 150],
+      "size": [170, 66],
+      "sources": [{ "path": "src/App.tsx", "line": 121, "label": "useState model" }]
+    },
+    {
+      "id": "view-model",
+      "type": "frontend",
+      "label": "Dashboard View Models",
+      "sublabel": "Metrics, twin, alerts",
+      "pos": [470, 310],
+      "size": [170, 66],
+      "sources": [
+        { "path": "src/App.tsx", "line": 93, "label": "Station data" },
+        { "path": "src/App.tsx", "line": 105, "label": "Alert data" }
+      ]
+    },
+    {
+      "id": "telemetry-api",
+      "type": "backend",
+      "label": "Telemetry API",
+      "sublabel": "REST / WebSocket gateway",
+      "pos": [700, 310],
+      "size": [170, 66],
+      "tag": "Backend boundary"
+    },
+    {
+      "id": "stream",
+      "type": "messagebus",
+      "label": "Station Telemetry Stream",
+      "sublabel": "Sensor events and sync ticks",
+      "pos": [700, 130],
+      "size": [170, 66],
+      "tag": "Proposed"
+    },
+    {
+      "id": "alert-engine",
+      "type": "backend",
+      "label": "Alert & Risk Engine",
+      "sublabel": "Risk thresholds",
+      "pos": [920, 310],
+      "size": [180, 66],
+      "tag": "Proposed"
+    },
+    {
+      "id": "simulation",
+      "type": "backend",
+      "label": "What-if Simulation Service",
+      "sublabel": "Failure and storm scenarios",
+      "pos": [470, 70],
+      "size": [180, 66],
+      "tag": "Proposed"
+    },
+    {
+      "id": "station-db",
+      "type": "database",
+      "label": "Station Data Store",
+      "sublabel": "Assets, telemetry, alerts",
+      "pos": [1150, 310],
+      "size": [170, 66],
+      "tag": "Proposed"
+    },
+    {
+      "id": "sensors",
+      "type": "external",
+      "label": "Maitri Station Systems",
+      "sublabel": "Energy, HVAC, water, weather",
+      "pos": [1150, 70],
+      "size": [170, 66],
+      "tag": "External source"
+    }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Operator browser", "wraps": ["dashboard", "client-state", "view-model"] },
+    { "kind": "security-group", "label": "Backend services", "wraps": ["telemetry-api", "alert-engine", "simulation", "station-db"] }
+  ],
+  "connections": [
+    { "id": "operator-dashboard", "from": "operator", "to": "dashboard", "variant": "emphasis" },
+    { "id": "dashboard-state", "from": "dashboard", "to": "client-state", "fromSide": "top", "toSide": "bottom" },
+    { "id": "dashboard-view-model", "from": "dashboard", "to": "view-model", "variant": "emphasis" },
+    { "id": "view-model-api", "from": "view-model", "to": "telemetry-api", "variant": "emphasis" },
+    { "id": "stream-api", "from": "stream", "to": "telemetry-api", "fromSide": "bottom", "toSide": "top" },
+    { "id": "sensors-stream", "from": "sensors", "to": "stream", "variant": "dashed", "fromSide": "left", "toSide": "right" },
+    { "id": "api-alerts", "from": "telemetry-api", "to": "alert-engine" },
+    { "id": "alerts-db", "from": "alert-engine", "to": "station-db" },
+    { "id": "dashboard-simulation", "from": "dashboard", "to": "simulation", "variant": "dashed", "fromSide": "top", "toSide": "bottom" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Frontend functionality",
+      "items": [
+        "Sidebar navigation switches operational pages",
+        "Station selector swaps Maitri and Bharati data",
+        "Digital Twin markers open asset drawers",
+        "Alerts launch inspection and simulation flows"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Backend architecture",
+      "items": [
+        "Telemetry API exposes snapshots and live updates",
+        "Stream normalizes station sensor events",
+        "Alert engine evaluates thresholds and risk chains",
+        "Station store persists assets, telemetry, and alert history"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Implementation boundary",
+      "items": [
+        "Current repository contains the React/Vite frontend",
+        "Backend services are proposed integration points",
+        "Static stationData and alertData become API responses",
+        "Simulation actions can evolve into backend jobs"
+      ]
+    }
+  ]
+}

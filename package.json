@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "edge": "node scripts/run-edge.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
